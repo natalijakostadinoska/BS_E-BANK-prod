@@ -1,0 +1,102 @@
+name: bs_mob_app2
+description: SPD E-Banking
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.6 <4.0.0'
+
+flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+    - assets/images/langs/en.png
+    - assets/images/langs/mk.png
+    - assets/images/logo-silk-big.png
+    - assets/images/logo-silk-small.png
+    - assets/images/logo-spd-big.png
+    - assets/images/logo-spd-big-white.png
+    - assets/images/logo-spd-small.png
+    - assets/images/logo-spd-small-1.png
+    - assets/images/logo-bs-small.jpg
+    - assets/images/currencies/
+    - assets/images/map_bg.png
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # --- UI & Utilities ---
+  cupertino_icons: ^1.0.5
+  intl: ^0.20.2
+  google_fonts: ^7.0.2
+  font_awesome_flutter: ^10.12.0
+  sprintf: ^7.0.0
+  pie_chart: ^5.0.0
+  sticky_headers: ^0.3.0+2
+
+  # --- State & Data ---
+  provider: ^6.0.5
+  shared_preferences: ^2.1.1
+  http: ^1.6.0
+  html: ^0.15.0
+  xml: ^6.5.0
+
+  # --- Systems & Auth ---
+  package_info_plus: ^9.0.0
+  url_launcher: ^6.1.10
+  local_auth: ^3.0.0
+  flutter_secure_storage: ^10.0.0
+
+  # --- Web & Specialized ---
+  flutter_inappwebview: ^6.1.5
+  webview_flutter: ^4.2.1
+  syncfusion_flutter_calendar: ^32.1.23
+  syncfusion_localizations: ^32.1.23
+
+  # --- UPDATED SECURITY PLUGIN ---
+  secure_display: ^0.1.0
+  flutter_native_splash: ^2.4.7
+
+  local_auth_android: any
+  change_app_package_name: ^1.5.0
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_gen: ^5.12.0
+  flutter_launcher_icons: ^0.14.4
+
+# --- ICON CONFIGURATION ---
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo-spd-small-1.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/logo-spd-small-1.png"
+  adaptive_icon_foreground_inset: 16
+  min_sdk_android: 21
+
+# --- SPLASH SCREEN CONFIGURATION ---
+flutter_native_splash:
+  color: "#ffffff"
+  # This image will be used for iOS and Android < 12
+  image: "assets/images/logo-bs-small.jpg"
+
+  color_dark: "#121212"
+  image_dark: "assets/images/logo-bs-small.jpg"
+
+  android: true
+  ios: true
+  fullscreen: true
+
+  android_12:
+    # This image will be used for Android 12 and greater
+    image: "assets/images/logo-spd-small-1.png"
+    color: "#ffffff"
+    icon_background_color: "#ffffff"
+
+    image_dark: "assets/images/logo-spd-small-1.png"
+    color_dark: "#121212"
+    icon_background_color_dark: "#121212"
