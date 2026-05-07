@@ -10,9 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart' as flutter_loc;
 import 'package:syncfusion_localizations/syncfusion_localizations.dart';
-import 'package:provider/provider.dart';
-import 'dart:io'; // Required for HttpOverrides
-import 'package:flutter/material.dart';
+import 'dart:io';
 
 /// ---------------------------
 /// HTTP OVERRIDES
@@ -20,10 +18,8 @@ import 'package:flutter/material.dart';
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    // We specify 'io.X509Certificate' or simply ensure the type matches dart:io
     return super.createHttpClient(context)
       ..badCertificateCallback = (cert, String host, int port) => true;
-    // Removing the explicit 'X509Certificate' type usually lets Dart infer the correct one from dart:io
   }
 }
 
@@ -102,6 +98,7 @@ const Map<String, Map<String, String>> translations = {
 
     // Loan details
     'loan': 'Loan',
+    'loans': 'Loans',
     'party': 'Party',
     'contract_no': 'Contract Number',
     'approval_date': 'Approval Date',
@@ -113,6 +110,17 @@ const Map<String, Map<String, String>> translations = {
     'no_payments': 'No payments made',
     'amortization_plan': 'Amortization Plan',
     'close': 'Close',
+    'ref_number': 'Reference Number',
+    'next_payment_amount': 'Next payment amount',
+    'interest_rate': 'Annual interest rate',
+    'transaction_account': 'Transaction account',
+    'undue_principal': 'Undue Principal',
+    'due_principal': 'Due Principal',
+    'undue_interest': 'Undue Interest',
+    'due_interest': 'Due Interest',
+    'due_penalty_interest': 'Due Penalty Interest',
+    'undue_penalty_interest': 'Undue Penalty Interest',
+    'due_commission': 'Due Commission',
 
     'confirm_logout_msg': 'Do you want to logout?',
     'confirm_exit_msg': 'Do you want to exit the app?',
@@ -142,6 +150,16 @@ const Map<String, Map<String, String>> translations = {
     'save_changes': 'Save changes?',
     'create_event': 'Create this event?',
     'conn_error': 'Connection Error',
+
+    //Deposits
+    'deposits': 'Deposits',
+    'deposit_time_mkd': 'Time deposit in MKD',
+    'deposit_sight': 'Sight deposit',
+    'deposit_children': 'Children\'s savings',
+    'months': 'months',
+    'flexible': 'Flexible',
+    'interest_label': 'Interest',
+    'period_label': 'Period',
   },
   'mk': {
     // Најава и Автентикација
@@ -174,7 +192,7 @@ const Map<String, Map<String, String>> translations = {
 
     // Навигација и Мени
     'user': 'Корисник',
-    'control_panel': 'Контролна табла',
+    'control_panel': 'Контролен панел',
     'home': 'Дома',
     'exchange_rates': 'Курсна листа',
     'calendar': 'Календар',
@@ -217,17 +235,29 @@ const Map<String, Map<String, String>> translations = {
 
     // Детали за кредит
     'loan': 'Кредит',
+    'loans': 'Кредити',
     'party': 'Партија',
     'contract_no': 'Бр. на договор',
     'approval_date': 'Датум на одобрување',
     'currency': 'Валута',
     'approved_amount': 'Одобрен Износ',
     'approved_amount_mkd': 'Одобрен Износ во МКД',
-    'due_date': 'Доспева на',
+    'due_date': 'Датум на доспевање',
     'payment_list': 'Список на уплати',
     'no_payments': 'Не се направени уплати',
     'amortization_plan': 'Амортизациски план',
     'close': 'Затвори',
+    'ref_number': 'Референтен број',
+    'next_payment_amount': 'Следен износ на отплата',
+    'interest_rate': 'Годишна каматна стапка',
+    'transaction_account': 'Трансакциска сметка',
+    'undue_principal': 'Недоспеана Главница',
+    'due_principal': 'Доспеана главница',
+    'undue_interest': 'Недоспеана камата',
+    'due_interest': 'Доспеана камата',
+    'due_penalty_interest': 'Доспеана казнена камата',
+    'undue_penalty_interest': 'Недоспеана казнена камата',
+    'due_commission': 'Доспеана провизија',
 
     'confirm_logout_msg': 'Дали сакате да се одјавите?',
     'confirm_exit_msg': 'Дали сакате да ја затворите апликацијата?',
@@ -257,6 +287,16 @@ const Map<String, Map<String, String>> translations = {
     'save_changes': 'Зачувај промени?',
     'create_event': 'Креирај го овој настан?',
     'conn_error': 'Проблем со конекцијата',
+
+    //Позајмици
+    'deposits': 'Позајмици',
+    'deposit_time_mkd': 'Орочен депозит во МКД',
+    'deposit_sight': 'Депозит по видување',
+    'deposit_children': 'Детско штедење',
+    'months': 'месеци',
+    'flexible': 'Флексибилно',
+    'interest_label': 'Камата',
+    'period_label': 'Рок',
   },
 };
 
@@ -266,6 +306,190 @@ const Map<String, Map<String, String>> translations = {
 String t(BuildContext context, String key) {
   final user = Provider.of<SPDUser>(context, listen: false);
   return translations[user.currentLanguage]?[key] ?? key;
+}
+
+/// ---------------------------
+/// LOANS VIEW
+/// ---------------------------
+class LoansView extends StatefulWidget {
+  final String userId;
+  const LoansView({super.key, required this.userId});
+
+  @override
+  State<LoansView> createState() => _LoansViewState();
+}
+
+class _LoansViewState extends State<LoansView> {
+  Future<List<Map<String, String>>>? _loansFuture;
+
+  String t(BuildContext context, String key) {
+    final user = Provider.of<SPDUser>(context, listen: false);
+    return translations[user.currentLanguage]?[key] ?? key;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loansFuture = fetchLoans(widget.userId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(t(context, 'loans')),
+        elevation: 1,
+        titleTextStyle: TextStyle(
+            color: colorScheme.onSurface,
+            fontSize: 20,
+            fontWeight: FontWeight.bold
+        ),
+      ),
+      body: FutureBuilder<List<Map<String, String>>>(
+        future: _loansFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('${t(context, 'error_launching')}'));
+          }
+
+          final loans = snapshot.data ?? [];
+          if (loans.isEmpty) {
+            return Center(child: Text(t(context, 'no_loans')));
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: loans.length,
+            itemBuilder: (context, index) {
+              final loan = loans[index];
+              return _buildLoanCard(context, loan);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildLoanCard(BuildContext context, Map<String, String> loan) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        leading: CircleAvatar(
+          backgroundColor: Colors.blue.withOpacity(0.1),
+          child: const Icon(Icons.payments_outlined, color: Colors.blue),
+        ),
+        title: Text(
+          loan['PRODUCT_NAME'] ?? '',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        trailing: Icon(
+          Icons.chevron_right,
+          color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => LoanDetailsView(loanData: loan),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// ---------------------------
+/// DEPOSIT VIEW
+/// ---------------------------
+class DepositsView extends StatelessWidget {
+  const DepositsView({super.key});
+
+
+  String t(BuildContext context, String key) {
+    final user = Provider.of<SPDUser>(context, listen: false);
+    return translations[user.currentLanguage]?[key] ?? key;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<SPDUser>(context);
+    final lang = user.currentLanguage ?? 'en';
+
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(t(context, 'deposits')),
+        centerTitle: false,
+        elevation: 1,
+        titleTextStyle: TextStyle(
+            color: colorScheme.onSurface,
+            fontSize: 20,
+            fontWeight: FontWeight.bold
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          _buildDepositCard(
+            context,
+            title: t(context, 'deposit_time_mkd'),
+            interest: "2.5%",
+            period: "12 ${t(context, 'months')}",
+            icon: Icons.savings_outlined,
+          ),
+          _buildDepositCard(
+            context,
+            title: t(context, 'deposit_sight'),
+            interest: "0.1%",
+            period: t(context, 'flexible'),
+            icon: Icons.account_balance_wallet_outlined,
+          ),
+          _buildDepositCard(
+            context,
+            title: t(context, 'deposit_children'),
+            interest: "3.0%",
+            period: "24 ${t(context, 'months')}",
+            icon: Icons.child_care,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDepositCard(BuildContext context,
+      {required String title, required String interest, required String period, required IconData icon}) {
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        leading: CircleAvatar(
+          backgroundColor: Colors.blue.withOpacity(0.1),
+          child: Icon(icon, color: Colors.blue),
+        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text("${t(context, 'interest_label')}: $interest | ${t(context, 'period_label')}: $period"),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: () {
+        },
+      ),
+    );
+  }
 }
 
 /// ---------------------------
@@ -427,7 +651,6 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   Future<List<Map<String, String>>>? _loansFuture;
 
-  // Helper function to access translations
   String t(BuildContext context, String key) {
     final user = Provider.of<SPDUser>(context, listen: false);
     return translations[user.currentLanguage]?[key] ?? key;
@@ -437,71 +660,219 @@ class _HomeViewState extends State<HomeView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_loansFuture == null) {
-      // Use the userId passed to the widget (e.g., "29")
-      if (widget.userId != null) {
-        _loansFuture = fetchLoans(widget.userId!);
-      } else {
-        _loansFuture = Future.value([]);
-      }
+      _loansFuture = widget.userId != null ? fetchLoans(widget.userId!) : Future.value([]);
     }
-  }  /// 2. 23.12.2025
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, String>>>(
-      future: _loansFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    final user = Provider.of<SPDUser>(context);
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionHeader(
+              title: t(context, 'loans'),
+              icon: Icons.payments_outlined,
+              color: Colors.blue.shade800
+          ),
 
-        if (snapshot.hasError) {
-          return Center(child: Text('${t(context, 'error_launching')}: ${snapshot.error}'));
-        }
+          FutureBuilder<List<Map<String, String>>>(
+            future: _loansFuture,
+            builder: (context, snapshot) {
+              return LoanView(
+                data: snapshot.data ?? [],
+                connectionState: snapshot.connectionState,
+                lang: user.currentLanguage,
+              );
+            },
+          ),
 
-        final loans = snapshot.data ?? [];
-        if (loans.isEmpty) {
-          return Center(
-            child: Text(
-              t(context, 'no_loans'),
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-          );
-        }
+          const SizedBox(height: 20),
 
-        return ListView.builder(
-          padding: const EdgeInsets.only(top: 10),
-          itemCount: loans.length,
-          itemBuilder: (context, index) {
-            final loan = loans[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              elevation: 2,
-              child: ListTile(
-                leading: const Icon(Icons.account_balance_wallet, color: Colors.blue),
-                title: Text(
-                  loan['PRODUCT_NAME'] ?? '',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+          _buildSectionHeader(
+              title: t(context, 'deposits'),
+              icon: Icons.savings_outlined,
+              color: Colors.teal.shade700
+          ),
+
+          SizedBox(
+            height: 220,
+            child: PageView(
+              controller: PageController(viewportFraction: 0.9),
+              children: [
+                _buildDepositItem(
+                  title: t(context, 'deposit_time_mkd'),
+                  interest: "2.5%",
+                  period: "12 ${t(context, 'months')}",
+                  colors: [Colors.teal.shade800, Colors.teal.shade400],
                 ),
-                subtitle: Text(loan['ACCOUNT_NUMBER'] ?? ''),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  // Navigate to the details screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LoanDetailsView(loanData: loan),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
-        );
-      },
+                _buildDepositItem(
+                  title: t(context, 'deposit_children'),
+                  interest: "3.0%",
+                  period: "24 ${t(context, 'months')}",
+                  colors: [Colors.orange.shade800, Colors.orange.shade400],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
     );
   }
 
+  Widget _buildSectionHeader({required String title, required IconData icon, required Color color}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 24),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: color,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Container(
+            height: 3,
+            width: 40,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoanItem(Map<String, String> loan) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(colors: [Colors.blue.shade900, Colors.blue.shade600]),
+        ),
+        padding: const EdgeInsets.all(25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Icon(Icons.account_balance, color: Colors.white, size: 30),
+            Text(loan['PRODUCT_NAME'] ?? '',
+                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(loan['ACCOUNT_NUMBER'] ?? '',
+                style: const TextStyle(color: Colors.white70, fontFamily: 'monospace')),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _buildDepositItem({
+    required String title,
+    required String interest,
+    required String period,
+    required List<Color> colors
+  }) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        padding: const EdgeInsets.all(25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.savings_outlined, color: Colors.white, size: 28),
+                    const SizedBox(width: 10),
+                    Text(
+                      t(context, 'deposits').toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.1,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Text(
+                    interest,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const Spacer(),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "${t(context, 'period_label')}: $period",
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 /// ---------------------------
@@ -686,12 +1057,12 @@ class _LoginViewState extends State<LoginView> {
         leading: Padding(
           padding: const EdgeInsets.only(left: 12),
           child: Image.asset(
-        // Switch based on the current mode
-        isDark 
-            ? 'assets/images/logo-spd-big-white.png' 
-            : 'assets/images/logo-spd-big.png', 
-        fit: BoxFit.contain,
-      ),
+            // Switch based on the current mode
+            isDark
+                ? 'assets/images/logo-spd-big-white.png'
+                : 'assets/images/logo-spd-big.png',
+            fit: BoxFit.contain,
+          ),
         ),
         actions: [
           Padding(
@@ -866,12 +1237,12 @@ class _PinGateScreenState extends State<PinGateScreen> {
         leading: Padding(
           padding: const EdgeInsets.only(left: 12),
           child: Image.asset(
-        // Switch based on the current mode
-        isDark
-            ? 'assets/images/logo-spd-big-white.png'
-            : 'assets/images/logo-spd-big.png',
-        fit: BoxFit.contain,
-      ),
+            // Switch based on the current mode
+            isDark
+                ? 'assets/images/logo-spd-big-white.png'
+                : 'assets/images/logo-spd-big.png',
+            fit: BoxFit.contain,
+          ),
         ),
         actions: [
           Padding(
@@ -1030,11 +1401,11 @@ PreferredSizeWidget SPDAppBar(BuildContext context, {required Widget title}) {
 /// MAINAPP
 /// ---------------------------
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Apply the override here to ignore certificate errors globally
+  // This line tells Flutter to use your custom 'MyHttpOverrides' class
+  // which ignores the "Unable to verify certificate" error.
   HttpOverrides.global = MyHttpOverrides();
 
+  WidgetsFlutterBinding.ensureInitialized();
   await SPDUser.init();
 
   runApp(
@@ -1176,6 +1547,32 @@ class _MainViewState extends State<MainView> with SingleTickerProviderStateMixin
               title: Text(t(context, 'home')),
               onTap: () { Navigator.pop(context); changeView(tabIndex: 2); },
             ),
+            /// ===================== НОВО: Кредити =====================
+            SPDMenuItem(
+              leading: const Icon(Icons.payments_outlined),
+              title: Text(t(context, 'loans')),
+              onTap: () {
+                Navigator.pop(context); // Го затвора drawer-от
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => LoansView(userId: widget.userId) // Праќаме userId
+                    )
+                );
+              },
+            ),
+            /// ===================== НОВО: Позајмици =====================
+            SPDMenuItem(
+              leading: const Icon(Icons.savings_outlined),
+              title: Text(t(context, 'deposits')),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const DepositsView())
+                );
+              },
+            ),
             SPDMenuItem(
               leading: const Icon(Icons.currency_exchange_outlined),
               // This now calls the translation helper every time the UI paints
@@ -1252,12 +1649,12 @@ class _MainViewState extends State<MainView> with SingleTickerProviderStateMixin
         leading: Padding(
           padding: const EdgeInsets.only(left: 12),
           child: Image.asset(
-        // Switch based on the current mode
-        isDark 
-            ? 'assets/images/logo-spd-big-white.png' 
-            : 'assets/images/logo-spd-big.png', 
-        fit: BoxFit.contain,
-      ),
+            // Switch based on the current mode
+            isDark
+                ? 'assets/images/logo-spd-big-white.png'
+                : 'assets/images/logo-spd-big.png',
+            fit: BoxFit.contain,
+          ),
         ),
         actions: [
           Padding(
@@ -1318,83 +1715,128 @@ class LoanView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: data.length,
-      itemBuilder: (context, index) {
-        return _buildLoanCard(context, data[index]);
-      },
-    );
-  }
+    if (connectionState == ConnectionState.waiting) {
+      return const SizedBox(height: 220, child: Center(child: CircularProgressIndicator()));
+    }
 
-  Widget _buildLoanCard(BuildContext context, dynamic loan) {
-    // 1. Grab the theme colors
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    if (data.isEmpty) {
+      return SizedBox(
+        height: 100,
+        child: Center(child: Text(t(context, 'no_loans'))),
+      );
+    }
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      elevation: 2,
-      // The Card will automatically change color in Dark Mode
-      child: ListTile(
-        leading: Icon(Icons.account_balance_wallet, color: colorScheme.primary),
-        title: Text(
-          loan['PRODUCT_NAME'] ?? '',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            // Automatically Black in light / White in dark
-            color: colorScheme.onSurface,
-          ),
-        ),
-        subtitle: Text(
-          "${t(context, 'contract')}: ${loan['ACCOUNT_NUMBER']}",
-          style: TextStyle(
-            // Automatically Grey-ish in both modes
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              "${loan['CURR_AMOUNT']} ${loan['CURR']}",
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.green, // Green usually looks good on both
-              ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              size: 16,
-              color: colorScheme.outline, // Adaptive grey
-            ),
-          ],
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => LoanDetailsView(loanData: loan),
-            ),
-          );
+    return SizedBox(
+      height: 230,
+      child: PageView.builder(
+        controller: PageController(viewportFraction: 0.9, initialPage: 0),
+        itemCount: data.length,
+        itemBuilder: (context, index) {
+          return _buildLoanCarouselCard(context, data[index]);
         },
       ),
     );
   }
 
-  // Note: I've updated the background of the bottom sheet here too
-  void _showLoanBottomSheet(BuildContext context, dynamic loan) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => LoanDetailsSheet(
-        loan: loan,
-        lang: SPDUser.current.currentLanguage,
+  Widget _buildLoanCarouselCard(BuildContext context, dynamic loan) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => LoanDetailsView(loanData: loan),
+          ),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        elevation: 8,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              colors: isDark
+                  ? [Colors.blue.shade900, Colors.blueGrey.shade800]
+                  : [Colors.blue.shade800, Colors.blue.shade500],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          padding: const EdgeInsets.all(25),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.account_balance, color: Colors.white, size: 28),
+                      const SizedBox(width: 10),
+                      Text(
+                        t(context, 'loans').toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.1,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Text(
+                      "${loan['CURR'] ?? ''}",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Text(
+                loan['PRODUCT_NAME'] ?? '',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    loan['ACCOUNT_NUMBER'] ?? '',
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                      fontFamily: 'monospace',
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -1612,41 +2054,41 @@ class _SettingsViewState extends State<SettingsView> {
           SPDMenuItem(
             leading: const Icon(Icons.language_outlined),
             title: Text(translations[lang]?['language'] ?? 'Language'),
-              onTap: () {
-                final user = Provider.of<SPDUser>(context, listen: false);
-                final lang = user.currentLanguage;
+            onTap: () {
+              final user = Provider.of<SPDUser>(context, listen: false);
+              final lang = user.currentLanguage;
 
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog( // Use 'ctx' for the dialog context
-                    title: Text(translations[lang]?['select_language'] ?? 'Select Language'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // ENGLISH OPTION
-                        ListTile(
-                          leading: Image.asset('assets/images/langs/en.png', width: 32, height: 32),
-                          title: Text(translations[lang]?['english'] ?? 'English'),
-                          onTap: () {
-                            user.setLanguage('en');
-                            Navigator.pop(ctx); // Use ctx to close the dialog
-                          },
-                        ),
-                        const Divider(),
-                        // MACEDONIAN OPTION
-                        ListTile(
-                          leading: Image.asset('assets/images/langs/mk.png', width: 32, height: 32),
-                          title: Text(translations[lang]?['macedonian'] ?? 'Macedonian'),
-                          onTap: () {
-                            user.setLanguage('mk');
-                            Navigator.pop(ctx); // Use ctx to close the dialog
-                          },
-                        ),
-                      ],
-                    ),
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog( // Use 'ctx' for the dialog context
+                  title: Text(translations[lang]?['select_language'] ?? 'Select Language'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // ENGLISH OPTION
+                      ListTile(
+                        leading: Image.asset('assets/images/langs/en.png', width: 32, height: 32),
+                        title: Text(translations[lang]?['english'] ?? 'English'),
+                        onTap: () {
+                          user.setLanguage('en');
+                          Navigator.pop(ctx); // Use ctx to close the dialog
+                        },
+                      ),
+                      const Divider(),
+                      // MACEDONIAN OPTION
+                      ListTile(
+                        leading: Image.asset('assets/images/langs/mk.png', width: 32, height: 32),
+                        title: Text(translations[lang]?['macedonian'] ?? 'Macedonian'),
+                        onTap: () {
+                          user.setLanguage('mk');
+                          Navigator.pop(ctx); // Use ctx to close the dialog
+                        },
+                      ),
+                    ],
                   ),
-                );
-              },
+                ),
+              );
+            },
           ),
 
 
@@ -1873,12 +2315,12 @@ class _ChangePinViewState extends State<ChangePinView> {
         leading: Padding(
           padding: const EdgeInsets.only(left: 12),
           child: Image.asset(
-        // Switch based on the current mode
-        isDark 
-            ? 'assets/images/logo-spd-big-white.png' 
-            : 'assets/images/logo-spd-big.png', 
-        fit: BoxFit.contain,
-      ),
+            // Switch based on the current mode
+            isDark
+                ? 'assets/images/logo-spd-big-white.png'
+                : 'assets/images/logo-spd-big.png',
+            fit: BoxFit.contain,
+          ),
         ),
         actions: [
           Padding(
@@ -2766,13 +3208,21 @@ class LoanDetailsView extends StatelessWidget {
             _buildHeader(context, loanData['PRODUCT_NAME'] ?? ''),
             const SizedBox(height: 20),
 
-            _buildDetailRow(context, lbl('party'), loanData['PARTIJA']),
-            _buildDetailRow(context, lbl('contract_no'), loanData['CONTRACT_NO']),
-            _buildDetailRow(context, lbl('approval_date'), loanData['DATE_APP']),
-            _buildDetailRow(context, lbl('currency'), loanData['CURR']),
+            _buildDetailRow(context, lbl('ref_number'), loanData['REF_NO']),
             _buildDetailRow(context, lbl('approved_amount'), loanData['AMOUNT']),
-            _buildDetailRow(context, lbl('approved_amount_mkd'), loanData['AMOUNT_MKD']),
+            _buildDetailRow(context, lbl('currency'), loanData['CURR']),
+            _buildDetailRow(context, lbl('approval_date'), loanData['DATE_APP']),
             _buildDetailRow(context, lbl('due_date'), loanData['DUE_DATE']),
+            _buildDetailRow(context, lbl('next_payment_amount'), loanData['NEXT_PAYMENT']),
+            _buildDetailRow(context, lbl('interest_rate'), loanData['INTEREST_RATE']),
+            _buildDetailRow(context, lbl('transaction_account'), loanData['ACCOUNT']),
+            _buildDetailRow(context, lbl('undue_principal'), loanData['UNDUE_PRINCIPAL']),
+            _buildDetailRow(context, lbl('due_principal'), loanData['DUE_PRINCIPAL']),
+            _buildDetailRow(context, lbl('undue_interest'), loanData['UNDUE_INTEREST']),
+            _buildDetailRow(context, lbl('due_interest'), loanData['DUE_INTEREST']),
+            _buildDetailRow(context, lbl('due_penalty_interest'), loanData['DUE_PENALTY']),
+            _buildDetailRow(context, lbl('undue_penalty_interest'), loanData['UNDUE_PENALTY']),
+            _buildDetailRow(context, lbl('due_commission'), loanData['DUE_COMMISSION']),
           ],
         ),
       ),
@@ -2984,15 +3434,35 @@ Future<List<Map<String, String>>> fetchLoans(String userId) async {
         List<dynamic> list = data['loans'];
 
         return list.map((item) {
+          String rawCurr = item['CURR']?.toString() ?? '';
+          String displayCurr = (rawCurr.trim() == '807' || rawCurr.trim() == 'MKD') ? 'MKD' : rawCurr;
+
+          var rawAmount = item['CURR_AMOUNT'] ?? item['CUR_AMOUNT'] ?? '0.00';
+
           return {
-            'PRODUCT_NAME': item['PRODUCT_NAME']?.toString() ?? '',
-            'PARTIJA':      item['APP_APPNO']?.toString() ?? '',
-            'CONTRACT_NO':  item['CONTRACT_NO']?.toString().trim() ?? '',
-            'DATE_APP':     _formatDate(item['DATE_APPROVAL']?.toString()),
-            'CURR':         item['CURR']?.toString() ?? '',
-            'AMOUNT':       _formatAmount(item['CURR_AMOUNT']), // Format: 200,000.00
-            'AMOUNT_MKD':   _formatAmount(item['MKD_AMOUNT']),  // Format: 200,000.00
-            'DUE_DATE':     _formatDate(item['DUE_DATE']?.toString()),
+            'PRODUCT_NAME':    item['PRODUCT_NAME']?.toString() ?? '',
+            'REF_NO':          item['APP_APPNO']?.toString() ?? '',
+
+            'AMOUNT':          '${_formatAmount(rawAmount)} $displayCurr',
+            'AMOUNT_MKD':      '${_formatAmount(item['MKD_AMOUNT'])} MKD',
+
+            'CURR':            displayCurr,
+            'DATE_APP':        _formatDate(item['DATE_APPROVAL']?.toString()),
+            'DUE_DATE':        _formatDate(item['DUE_DATE']?.toString()),
+
+            'NEXT_PAYMENT':    '${_formatAmount(item['NEXTINSTALLMENTAMOUNT'])} $displayCurr',
+            'UNDUE_PRINCIPAL': '${_formatAmount(item['NONMATUREPRINCIPAL'])} $displayCurr',
+            'DUE_PRINCIPAL':   '${_formatAmount(item['MATUREPRINCIPAL'])} $displayCurr',
+            'UNDUE_INTEREST':  '${_formatAmount(item['NONMATUREINTEREST'])} $displayCurr',
+            'DUE_INTEREST':    '${_formatAmount(item['REGULARINTEREST'])} $displayCurr',
+            'DUE_PENALTY':     '${_formatAmount(item['PENALTYINTEREST'])} $displayCurr',
+            'UNDUE_PENALTY':   '${_formatAmount(item['NONMATUREPROVISION'])} $displayCurr',
+            'DUE_COMMISSION':  '${_formatAmount(item['PROVISION'])} $displayCurr',
+
+            'INTEREST_RATE': (item['INTRATE'] != null && item['INTRATE'].toString().isNotEmpty)
+                ? "${double.tryParse(item['INTRATE'].toString())?.toStringAsFixed(2) ?? item['INTRATE']}%"
+                : "1.00%",
+            'ACCOUNT':         item['APP_RESV_ACCOUNT']?.toString() ?? '',
           };
         }).toList();
       }
