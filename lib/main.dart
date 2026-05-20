@@ -413,84 +413,84 @@ class _LoansViewState extends State<LoansView> {
 /// ---------------------------
 /// DEPOSIT VIEW
 /// ---------------------------
-class DepositsView extends StatelessWidget {
-  const DepositsView({super.key});
-
-
-  String t(BuildContext context, String key) {
-    final user = Provider.of<SPDUser>(context, listen: false);
-    return translations[user.currentLanguage]?[key] ?? key;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final user = Provider.of<SPDUser>(context);
-    final lang = user.currentLanguage ?? 'en';
-
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(t(context, 'deposits')),
-        centerTitle: false,
-        elevation: 1,
-        titleTextStyle: TextStyle(
-            color: colorScheme.onSurface,
-            fontSize: 20,
-            fontWeight: FontWeight.bold
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          _buildDepositCard(
-            context,
-            title: t(context, 'deposit_time_mkd'),
-            interest: "2.5%",
-            period: "12 ${t(context, 'months')}",
-            icon: Icons.savings_outlined,
-          ),
-          _buildDepositCard(
-            context,
-            title: t(context, 'deposit_sight'),
-            interest: "0.1%",
-            period: t(context, 'flexible'),
-            icon: Icons.account_balance_wallet_outlined,
-          ),
-          _buildDepositCard(
-            context,
-            title: t(context, 'deposit_children'),
-            interest: "3.0%",
-            period: "24 ${t(context, 'months')}",
-            icon: Icons.child_care,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDepositCard(BuildContext context,
-      {required String title, required String interest, required String period, required IconData icon}) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        leading: CircleAvatar(
-          backgroundColor: Colors.blue.withOpacity(0.1),
-          child: Icon(icon, color: Colors.blue),
-        ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text("${t(context, 'interest_label')}: $interest | ${t(context, 'period_label')}: $period"),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () {
-        },
-      ),
-    );
-  }
-}
+// class DepositsView extends StatelessWidget {
+//   const DepositsView({super.key});
+//
+//
+//   String t(BuildContext context, String key) {
+//     final user = Provider.of<SPDUser>(context, listen: false);
+//     return translations[user.currentLanguage]?[key] ?? key;
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final user = Provider.of<SPDUser>(context);
+//     final lang = user.currentLanguage ?? 'en';
+//
+//     final theme = Theme.of(context);
+//     final colorScheme = theme.colorScheme;
+//
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(t(context, 'deposits')),
+//         centerTitle: false,
+//         elevation: 1,
+//         titleTextStyle: TextStyle(
+//             color: colorScheme.onSurface,
+//             fontSize: 20,
+//             fontWeight: FontWeight.bold
+//         ),
+//       ),
+//       body: ListView(
+//         padding: const EdgeInsets.all(16.0),
+//         children: [
+//           _buildDepositCard(
+//             context,
+//             title: t(context, 'deposit_time_mkd'),
+//             interest: "2.5%",
+//             period: "12 ${t(context, 'months')}",
+//             icon: Icons.savings_outlined,
+//           ),
+//           _buildDepositCard(
+//             context,
+//             title: t(context, 'deposit_sight'),
+//             interest: "0.1%",
+//             period: t(context, 'flexible'),
+//             icon: Icons.account_balance_wallet_outlined,
+//           ),
+//           _buildDepositCard(
+//             context,
+//             title: t(context, 'deposit_children'),
+//             interest: "3.0%",
+//             period: "24 ${t(context, 'months')}",
+//             icon: Icons.child_care,
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Widget _buildDepositCard(BuildContext context,
+//       {required String title, required String interest, required String period, required IconData icon}) {
+//     return Card(
+//       elevation: 2,
+//       margin: const EdgeInsets.only(bottom: 12),
+//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+//       child: ListTile(
+//         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+//         leading: CircleAvatar(
+//           backgroundColor: Colors.blue.withOpacity(0.1),
+//           child: Icon(icon, color: Colors.blue),
+//         ),
+//         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+//         subtitle: Text("${t(context, 'interest_label')}: $interest | ${t(context, 'period_label')}: $period"),
+//         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+//         onTap: () {
+//         },
+//       ),
+//     );
+//   }
+// }
 
 /// ---------------------------
 /// CONTACTVIEW
@@ -688,34 +688,34 @@ class _HomeViewState extends State<HomeView> {
             },
           ),
 
-          const SizedBox(height: 20),
+          // const SizedBox(height: 20),
+          //
+          // _buildSectionHeader(
+          //     title: t(context, 'deposits'),
+          //     icon: Icons.savings_outlined,
+          //     color: Colors.teal.shade700
+          // ),
 
-          _buildSectionHeader(
-              title: t(context, 'deposits'),
-              icon: Icons.savings_outlined,
-              color: Colors.teal.shade700
-          ),
-
-          SizedBox(
-            height: 220,
-            child: PageView(
-              controller: PageController(viewportFraction: 0.9),
-              children: [
-                _buildDepositItem(
-                  title: t(context, 'deposit_time_mkd'),
-                  interest: "2.5%",
-                  period: "12 ${t(context, 'months')}",
-                  colors: [Colors.teal.shade800, Colors.teal.shade400],
-                ),
-                _buildDepositItem(
-                  title: t(context, 'deposit_children'),
-                  interest: "3.0%",
-                  period: "24 ${t(context, 'months')}",
-                  colors: [Colors.orange.shade800, Colors.orange.shade400],
-                ),
-              ],
-            ),
-          ),
+          // SizedBox(
+          //   height: 220,
+          //   child: PageView(
+          //     controller: PageController(viewportFraction: 0.9),
+          //     children: [
+          //       _buildDepositItem(
+          //         title: t(context, 'deposit_time_mkd'),
+          //         interest: "2.5%",
+          //         period: "12 ${t(context, 'months')}",
+          //         colors: [Colors.teal.shade800, Colors.teal.shade400],
+          //       ),
+          //       _buildDepositItem(
+          //         title: t(context, 'deposit_children'),
+          //         interest: "3.0%",
+          //         period: "24 ${t(context, 'months')}",
+          //         colors: [Colors.orange.shade800, Colors.orange.shade400],
+          //       ),
+          //     ],
+          //   ),
+          // ),
           const SizedBox(height: 40),
         ],
       ),
@@ -1562,17 +1562,17 @@ class _MainViewState extends State<MainView> with SingleTickerProviderStateMixin
               },
             ),
             /// ===================== НОВО: Позајмици =====================
-            SPDMenuItem(
-              leading: const Icon(Icons.savings_outlined),
-              title: Text(t(context, 'deposits')),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const DepositsView())
-                );
-              },
-            ),
+            // SPDMenuItem(
+            //   leading: const Icon(Icons.savings_outlined),
+            //   title: Text(t(context, 'deposits')),
+            //   onTap: () {
+            //     Navigator.pop(context);
+            //     Navigator.push(
+            //         context,
+            //         MaterialPageRoute(builder: (_) => const DepositsView())
+            //     );
+            //   },
+            // ),
             SPDMenuItem(
               leading: const Icon(Icons.currency_exchange_outlined),
               // This now calls the translation helper every time the UI paints
