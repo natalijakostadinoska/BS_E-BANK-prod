@@ -1,7 +1,9 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -15,9 +17,22 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // Reverted from compilerOptions to kotlinOptions for compatibility
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    // 🔐 LOAD KEYSTORE PROPERTIES
+    val keystoreProperties = Properties()
+    val keystorePropertiesFile = rootProject.file("key.properties")
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"])
+            storePassword = keystoreProperties["storePassword"] as String
+        }
     }
 
     defaultConfig {
@@ -28,7 +43,6 @@ android {
         versionName = flutter.versionName
     }
 
-    // Prevents the memory-heavy linting process during release
     lint {
         checkReleaseBuilds = false
         abortOnError = false
@@ -36,13 +50,15 @@ android {
 
     buildTypes {
         release {
-            // Signing with the debug keys for now
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
 
-            // R8 Minification settings
             isMinifyEnabled = false
             isShrinkResources = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
