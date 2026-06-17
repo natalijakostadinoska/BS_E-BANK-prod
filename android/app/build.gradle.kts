@@ -21,7 +21,6 @@ android {
         jvmTarget = "17"
     }
 
-    // 🔐 LOAD KEYSTORE PROPERTIES
     val keystoreProperties = Properties()
     val keystorePropertiesFile = rootProject.file("key.properties")
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
@@ -30,7 +29,7 @@ android {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String
             keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = file(keystoreProperties["storeFile"])
+            storeFile = file(keystoreProperties["storeFile"] as String)
             storePassword = keystoreProperties["storePassword"] as String
         }
     }

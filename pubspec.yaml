@@ -1,7 +1,7 @@
 name: bs_mob_app2
 description: SPD E-Banking
 publish_to: 'none'
-version: 1.0.1+2
+version: 3.0.0+4
 
 environment:
   sdk: '>=3.0.6 <4.0.0'
