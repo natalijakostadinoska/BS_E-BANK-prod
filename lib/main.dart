@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart' as flutter_loc;
 import 'package:syncfusion_localizations/syncfusion_localizations.dart';
+import 'dart:math';
 import 'dart:io';
 
 /// ---------------------------
@@ -22,7 +23,27 @@ class MyHttpOverrides extends HttpOverrides {
       ..badCertificateCallback = (cert, String host, int port) => true;
   }
 }
+Widget buildLanguageFlag(BuildContext context) {
+  final user = Provider.of<SPDUser>(context);
 
+  String rawLang = user.currentLanguage?.toLowerCase() ?? 'en';
+  String normalizedLang = rawLang.split('_').first.split('-').first;
+
+  if (normalizedLang != 'mk' && normalizedLang != 'en') {
+    normalizedLang = 'en';
+  }
+
+  return Image.asset(
+    'assets/images/$normalizedLang.png',
+    key: ValueKey<String>(normalizedLang),
+    width: 32,
+    height: 32,
+    fit: BoxFit.contain,
+    errorBuilder: (context, error, stackTrace) {
+      return const Icon(Icons.g_translate, size: 24);
+    },
+  );
+}
 /// ---------------------------
 /// TRANSLATIONS
 /// ---------------------------
@@ -72,7 +93,6 @@ const Map<String, Map<String, String>> translations = {
     'visit_website': 'Visit our website',
     'location_services': 'Location services',
     'report_card': 'Report a lost or stolen card 24/7',
-    'visit_our_branch': 'View our branch office',
     'contact_us': 'Contact us via e-mail',
     'could_not_launch': 'Could not launch the URL.',
     'error_launching': 'Error launching external app',
@@ -108,6 +128,8 @@ const Map<String, Map<String, String>> translations = {
     'due_date': 'Due Date',
     'payment_list': 'Payment List',
     'no_payments': 'No payments made',
+    'payments': 'Payments',
+    'no_payments_found': 'No payments found.',
     'amortization_plan': 'Amortization Plan',
     'close': 'Close',
     'ref_number': 'Reference Number',
@@ -151,7 +173,7 @@ const Map<String, Map<String, String>> translations = {
     'create_event': 'Create this event?',
     'conn_error': 'Connection Error',
 
-    //Deposits
+    // Deposits
     'deposits': 'Deposits',
     'deposit_time_mkd': 'Time deposit in MKD',
     'deposit_sight': 'Sight deposit',
@@ -160,6 +182,12 @@ const Map<String, Map<String, String>> translations = {
     'flexible': 'Flexible',
     'interest_label': 'Interest',
     'period_label': 'Period',
+
+    // Payments Extra
+    'total_amount_due': 'Total amount due',
+    'pay_now': 'Pay now',
+    'recent_transactions': 'Recent transactions',
+    'loan_repayment': 'Loan repayment',
   },
   'mk': {
     // Најава и Автентикација
@@ -171,7 +199,7 @@ const Map<String, Map<String, String>> translations = {
     'user_not_found': 'Корисникот не е пронајден или е неактивен',
     'server_error': 'Грешка на серверот',
 
-    // Updated Popup Lines
+    // Сигурносни скокачки прозорци
     'auth_required': 'Потребна е потврда',
     'verify_identity': 'Ве молиме скенирајте го вашиот оттисок',
     'touch_fingerprint': 'Допрете го сензорот',
@@ -209,7 +237,6 @@ const Map<String, Map<String, String>> translations = {
     'visit_website': 'Посетете ја нашата веб страна',
     'location_services': 'Локациски услуги',
     'report_card': 'Пријавете изгубена или украдена картичка 24/7',
-    'visit_our_branch': 'Посета на нашата експозитура',
     'contact_us': 'Контактирајте не преку е-пошта',
     'could_not_launch': 'Не може да се отвори URL.',
     'error_launching': 'Грешка при отворање на апликацијата',
@@ -228,12 +255,12 @@ const Map<String, Map<String, String>> translations = {
     'version': 'Верзија',
     'developer': 'Развој на апликацијата',
     'new_pin': 'Нов ПИН',
-    'confirm_pin': 'Потвди ПИН',
+    'confirm_pin': 'Потврди ПИН',
     'pin_4_digits': 'ПИН-от мора да има 4 цифри',
     'pin_mismatch': 'ПИН-овите не се совпаѓаат',
     'success': 'Успешно',
 
-    // Детали за кредит
+    // Детали за кредит & Плаќања
     'loan': 'Кредит',
     'loans': 'Кредити',
     'party': 'Партија',
@@ -245,6 +272,8 @@ const Map<String, Map<String, String>> translations = {
     'due_date': 'Датум на доспевање',
     'payment_list': 'Список на уплати',
     'no_payments': 'Не се направени уплати',
+    'payments': 'Плаќања',
+    'no_payments_found': 'Нема пронајдено плаќања.',
     'amortization_plan': 'Амортизациски план',
     'close': 'Затвори',
     'ref_number': 'Референтен број',
@@ -263,7 +292,7 @@ const Map<String, Map<String, String>> translations = {
     'confirm_exit_msg': 'Дали сакате да ја затворите апликацијата?',
     'confirm_action': 'Потврди',
 
-    // 5 минути заклучен корисник
+    // Заклучен корисник
     'account_paused': 'Акаунтот е паузиран 5 минути поради премногу неуспешни обиди.',
     'try_again_in': 'Обидете се повторно за',
     'minutes': 'минути',
@@ -288,7 +317,7 @@ const Map<String, Map<String, String>> translations = {
     'create_event': 'Креирај го овој настан?',
     'conn_error': 'Проблем со конекцијата',
 
-    //Позајмици
+    // Позајмици / Депозити
     'deposits': 'Позајмици',
     'deposit_time_mkd': 'Орочен депозит во МКД',
     'deposit_sight': 'Депозит по видување',
@@ -297,6 +326,12 @@ const Map<String, Map<String, String>> translations = {
     'flexible': 'Флексибилно',
     'interest_label': 'Камата',
     'period_label': 'Рок',
+
+    // Плаќања дополнително
+    'total_amount_due': 'Вкупен износ за плаќање',
+    'pay_now': 'Плати сега',
+    'recent_transactions': 'Неодамнешни трансакции',
+    'loan_repayment': 'Отплата на заем',
   },
 };
 
@@ -410,6 +445,136 @@ class _LoansViewState extends State<LoansView> {
   }
 }
 
+
+/// ---------------------------
+/// PAYMENTS VIEW
+/// ---------------------------
+class PaymentsView extends StatefulWidget {
+  final String userId;
+
+  const PaymentsView({super.key, required this.userId});
+
+  @override
+  State<PaymentsView> createState() => _PaymentsViewState();
+}
+
+class _PaymentsViewState extends State<PaymentsView> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          t(context, 'payments'),
+          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
+      backgroundColor: Colors.grey[50],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildBalanceCard(),
+              const SizedBox(height: 24),
+
+              Text(
+                t(context, 'recent_transactions'),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+
+              Expanded(
+                child: ListView.builder(
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                    return _buildTransactionItem();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBalanceCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.indigo[800],
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.indigo.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            t(context, 'total_amount_due'),
+            style: const TextStyle(color: Colors.white70, fontSize: 14),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            '1.250,00 ден',
+            style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.indigo[800],
+              minimumSize: const Size(double.infinity, 48),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(
+              t(context, 'pay_now'),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTransactionItem() {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey[200]!),
+      ),
+      child: ListTile(
+        leading: const CircleAvatar(
+          backgroundColor: Colors.greenAccent,
+          child: Icon(Icons.arrow_downward, color: Colors.green),
+        ),
+        title: Text(
+          t(context, 'loan_repayment'),
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        subtitle: const Text('09.07.2026'),
+        trailing: const Text(
+          '-250,00 ден',
+          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+      ),
+    );
+  }
+}
 /// ---------------------------
 /// DEPOSIT VIEW
 /// ---------------------------
@@ -492,6 +657,287 @@ class _LoansViewState extends State<LoansView> {
 //   }
 // }
 
+class HighSecurityAuthView extends StatefulWidget {
+  final String correctPin;
+  final Map<String, String> matrixGridValues;
+  final VoidCallback onSuccess;
+
+  const HighSecurityAuthView({
+    super.key,
+    required this.correctPin,
+    required this.matrixGridValues,
+    required this.onSuccess,
+  });
+
+  @override
+  State<HighSecurityAuthView> createState() => _HighSecurityAuthViewState();
+}
+
+class _HighSecurityAuthViewState extends State<HighSecurityAuthView> {
+  List<String> _scrambledKeys = [];
+  String _inputPin = '';
+  late String _currentGridCoordinate;
+  String _inputGridValue = '';
+  int _currentStep = 1;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrambleKeypad();
+    _generateGridChallenge();
+  }
+
+  void _scrambleKeypad() {
+    setState(() {
+      final List<String> digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+      digits.shuffle(Random());
+      _scrambledKeys = digits;
+    });
+  }
+  void _generateGridChallenge() {
+    final keys = widget.matrixGridValues.keys.toList();
+    if (keys.isNotEmpty) {
+      _currentGridCoordinate = keys[Random().nextInt(keys.length)];
+    } else {
+      _currentGridCoordinate = "A1";
+    }
+  }
+
+  void _onKeyPress(String value) {
+    setState(() {
+      _errorMessage = null;
+    });
+
+    if (_currentStep == 1) {
+      if (_inputPin.length < 4) {
+        setState(() => _inputPin += value);
+      }
+      if (_inputPin.length == 4) {
+        if (_inputPin == widget.correctPin) {
+          setState(() {
+            _currentStep = 2;
+          });
+        } else {
+          _handleFailure();
+        }
+      }
+    } else {
+      setState(() => _inputGridValue = value);
+
+      if (_inputGridValue == widget.matrixGridValues[_currentGridCoordinate]) {
+        widget.onSuccess();
+      } else {
+        _handleFailure();
+      }
+    }
+    _scrambleKeypad();
+  }
+
+  void _handleFailure() {
+    setState(() {
+      _inputPin = '';
+      _inputGridValue = '';
+      _currentStep = 1;
+      _errorMessage = "Authentication failed. Layout reset.";
+    });
+    _scrambleKeypad();
+    _generateGridChallenge();
+  }
+
+  void _onBackspace() {
+    setState(() {
+      _errorMessage = null;
+      if (_currentStep == 1 && _inputPin.isNotEmpty) {
+        _inputPin = _inputPin.substring(0, _inputPin.length - 1);
+      } else if (_currentStep == 2) {
+        _inputGridValue = '';
+      }
+    });
+    _scrambleKeypad();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: colorScheme.surface,
+      body: SafeArea(
+        child: Column(
+          children: [
+            const Spacer(),
+            Icon(Icons.shield_outlined, size: 64, color: colorScheme.error),
+            const SizedBox(height: 16),
+            Text(
+              _currentStep == 1 ? "ENTER SECURE PIN" : "MATRIX SECURITY CHECK",
+              style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _currentStep == 1
+                  ? "Keypad layouts are dynamically scrambled."
+                  : "Verify security token card details.",
+              style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 13),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+
+            _currentStep == 1 ? _buildPinIndicators() : _buildMatrixChallengeBlock(),
+
+            SizedBox(
+              height: 40,
+              child: Center(
+                child: _errorMessage != null
+                    ? Text(_errorMessage!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold))
+                    : null,
+              ),
+            ),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Column(
+                children: [
+                  _buildKeyboardRow(_scrambledKeys.sublist(0, 3)),
+                  _buildKeyboardRow(_scrambledKeys.sublist(3, 6)),
+                  _buildKeyboardRow(_scrambledKeys.sublist(6, 9)),
+                  _buildBottomRow(_scrambledKeys[9]),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPinIndicators() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(4, (index) {
+        bool isFilled = index < _inputPin.length;
+
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 12),
+          width: 36,
+          height: 45,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: isFilled ? colorScheme.error.withOpacity(0.1) : colorScheme.surface,
+            border: Border.all(
+                color: isFilled ? colorScheme.error : colorScheme.outlineVariant,
+                width: 2
+            ),
+          ),
+          child: Text(
+            isFilled ? _inputPin[index] : "",
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.error
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildMatrixChallengeBlock() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      decoration: BoxDecoration(
+        color: colorScheme.errorContainer.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.error.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "Enter coordinate [ $_currentGridCoordinate ] value: ",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(width: 12),
+          Container(
+            width: 40,
+            height: 45,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              border: Border.all(color: colorScheme.error, width: 2),
+              borderRadius: BorderRadius.circular(6),
+              color: colorScheme.surface,
+            ),
+            child: Text(
+              _inputGridValue,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildKeyboardRow(List<String> keys) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: keys.map((key) => _buildKeyButton(key)).toList(),
+      ),
+    );
+  }
+
+  Widget _buildBottomRow(String lastDigit) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          const SizedBox(width: 68),
+          _buildKeyButton(lastDigit),
+          SizedBox(
+            width: 68,
+            height: 68,
+            child: IconButton(
+              onPressed: _onBackspace,
+              icon: const Icon(Icons.backspace_outlined),
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildKeyButton(String value) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return SizedBox(
+      width: 68,
+      height: 68,
+      child: OutlinedButton(
+        onPressed: () => _onKeyPress(value),
+        style: OutlinedButton.styleFrom(
+          shape: const CircleBorder(),
+          side: BorderSide(color: colorScheme.error.withOpacity(0.4), width: 1.5),
+          backgroundColor: colorScheme.surface,
+        ),
+        child: Text(
+          value,
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
+        ),
+      ),
+    );
+  }
+}
+
 /// ---------------------------
 /// CONTACTVIEW
 /// ---------------------------
@@ -499,11 +945,11 @@ class ContactView extends StatelessWidget {
   const ContactView({super.key});
 
   static const Map<String, String> contacts = {
-    'customer_support': 'tel:023166466',
-    'questions': 'mailto:info@fkcbs.com.mk',
-    'visit_website': 'https://fkcbs.com.mk/',
-    'location_services': 'https://www.google.com/maps/search/?api=1&query=Ул.+Даме+Груев,+блок+1,+1000+Скопје',
-    'report_card': 'tel: 02 316 6466',
+    'customer_support': 'tel:13 505',
+    'questions': 'mailto:info@flexcredit.mk',
+    'visit_website': 'https://flexcredit.mk/',
+    'location_services': 'https://www.google.com/maps/place/FlexCredit/@42.0001971,21.4403052,2465m/data=!3m1!1e3!4m10!1m2!2m1!1sflexcredit!3m6!1s0x135415bb5ee2ce17:0x4309d6ea3a80b5e2!8m2!3d42.0001971!4d21.4593596!15sCgpmbGV4Y3JlZGl0kgELbG9hbl9hZ2VuY3ngAQA!16s%2Fg%2F11yq89lgbj?entry=ttu&g_ep=EgoyMDI2MDcwNi4wIKXMDSoASAFQAw%3D%3D',
+    'report_card': 'tel:13 505',
   };
 
   Future<void> _openUrl(String url, BuildContext context) async {
@@ -523,31 +969,25 @@ class ContactView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Get current theme info
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-
-    // 2. Define Styles (Removed 'const' because Theme.of is dynamic)
     final TextStyle subtitleStyle = TextStyle(
       fontWeight: FontWeight.bold,
-      // 'onSurface' is white in dark mode and black in light mode
       color: colorScheme.onSurface.withOpacity(0.7),
     );
 
-    // Dynamic color for the "Report Card" section
     final Color dangerColor = isDark ? Colors.redAccent : const Color(0xFFD32F2F);
     final Color dangerBg = isDark ? Colors.red.withOpacity(0.15) : const Color(0xFFFFEBEE);
 
     return Scaffold(
-      // The background will automatically adjust (White/Dark) based on MaterialApp theme
       body: ListView(
         padding: const EdgeInsets.all(12),
         children: [
           ListTile(
             leading: const Icon(Icons.support_agent_outlined, size: 32),
             title: Text(t(context, 'customer_support')),
-            subtitle: Text('02 3166 466', style: subtitleStyle),
+            subtitle: Text('13 505', style: subtitleStyle),
             trailing: Icon(Icons.chevron_right, color: colorScheme.outline),
             onTap: () => _openUrl(contacts['customer_support']!, context),
           ),
@@ -555,7 +995,7 @@ class ContactView extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.web_outlined, size: 32),
             title: Text(t(context, 'visit_website')),
-            subtitle: Text('https://fkcbs.com.mk/', style: subtitleStyle),
+            subtitle: Text('https://flexcredit.mk/', style: subtitleStyle),
             trailing: Icon(Icons.chevron_right, color: colorScheme.outline),
             onTap: () => _openUrl(contacts['visit_website']!, context),
           ),
@@ -563,7 +1003,6 @@ class ContactView extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.location_on_outlined, size: 32),
             title: Text(t(context, 'location_services')),
-            subtitle: Text(t(context, 'visit_our_branch'), style: subtitleStyle),
             trailing: Icon(Icons.chevron_right, color: colorScheme.outline),
             onTap: () => _openUrl(contacts['location_services']!, context),
           ),
@@ -577,11 +1016,10 @@ class ContactView extends StatelessWidget {
           ),
           const Divider(),
 
-          // Emergency/Report Section
           Container(
             decoration: BoxDecoration(
               color: dangerBg,
-              borderRadius: BorderRadius.circular(8), // Adds a nice touch
+              borderRadius: BorderRadius.circular(8),
             ),
             child: ListTile(
               leading: Icon(
@@ -626,7 +1064,7 @@ class _NewsViewState extends State<NewsView> {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(
-        Uri.parse('https://fkcbs.com.mk/%D0%BD%D0%BE%D0%B2%D0%BE%D1%81%D1%82%D0%B8/'),
+        Uri.parse('https://flexcredit.mk/'),
       );
   }
 
@@ -650,78 +1088,106 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   Future<List<Map<String, String>>>? _loansFuture;
+  Future<List<Map<String, String>>>? _paymentsFuture;
+
+  Future<List<Map<String, String>>> fetchPayments(String userId) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return [
+      {
+        'TITLE': 'EVN Electricity Bill',
+        'CURR': 'MKD',
+        'REFERENCE_NUMBER': '200018475920',
+      },
+      {
+        'TITLE': 'A1 Telecom Internet',
+        'CURR': 'MKD',
+        'REFERENCE_NUMBER': '100049285011',
+      },
+    ];
+  }
+  Future<List<Map<String, String>>> fetchLoans(String userId) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return [
+      {
+        'TITLE': 'Стамбен Кредит',
+        'CURR': 'MKD',
+        'CONTRACT_NO': '100-2024-3392',
+      }
+    ];
+  }
 
   String t(BuildContext context, String key) {
     final user = Provider.of<SPDUser>(context, listen: false);
+
     return translations[user.currentLanguage]?[key] ?? key;
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     if (_loansFuture == null) {
       _loansFuture = widget.userId != null ? fetchLoans(widget.userId!) : Future.value([]);
+    }
+    if (_paymentsFuture == null) {
+      _paymentsFuture = widget.userId != null ? fetchPayments(widget.userId!) : Future.value([]);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<SPDUser>(context);
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionHeader(
-              title: t(context, 'loans'),
-              icon: Icons.payments_outlined,
-              color: Colors.blue.shade800
-          ),
 
-          FutureBuilder<List<Map<String, String>>>(
-            future: _loansFuture,
-            builder: (context, snapshot) {
-              return LoanView(
-                data: snapshot.data ?? [],
-                connectionState: snapshot.connectionState,
-                lang: user.currentLanguage,
-              );
-            },
-          ),
+    return Container(
+      color: Colors.white,
+      width: double.infinity,
+      height: double.infinity,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionHeader(
+                title: t(context, 'loans'),
+                icon: Icons.payments_outlined,
+                color: Colors.blue.shade800
+            ),
 
-          // const SizedBox(height: 20),
-          //
-          // _buildSectionHeader(
-          //     title: t(context, 'deposits'),
-          //     icon: Icons.savings_outlined,
-          //     color: Colors.teal.shade700
-          // ),
+            FutureBuilder<List<Map<String, String>>>(
+              future: _loansFuture,
+              builder: (context, snapshot) {
+                return LoanView(
+                  data: snapshot.data ?? [],
+                  connectionState: snapshot.connectionState,
+                  lang: user.currentLanguage,
+                );
+              },
+            ),
 
-          // SizedBox(
-          //   height: 220,
-          //   child: PageView(
-          //     controller: PageController(viewportFraction: 0.9),
-          //     children: [
-          //       _buildDepositItem(
-          //         title: t(context, 'deposit_time_mkd'),
-          //         interest: "2.5%",
-          //         period: "12 ${t(context, 'months')}",
-          //         colors: [Colors.teal.shade800, Colors.teal.shade400],
-          //       ),
-          //       _buildDepositItem(
-          //         title: t(context, 'deposit_children'),
-          //         interest: "3.0%",
-          //         period: "24 ${t(context, 'months')}",
-          //         colors: [Colors.orange.shade800, Colors.orange.shade400],
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          const SizedBox(height: 40),
-        ],
+            const SizedBox(height: 15),
+
+            _buildSectionHeader(
+                title: t(context, 'payments'),
+                icon: Icons.receipt_long_outlined,
+                color: Colors.green.shade700
+            ),
+
+            FutureBuilder<List<Map<String, String>>>(
+              future: _paymentsFuture,
+              builder: (context, snapshot) {
+                return PaymentView(
+                  data: snapshot.data ?? [],
+                  connectionState: snapshot.connectionState,
+                  lang: user.currentLanguage,
+                );
+              },
+            ),
+
+            const SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }
-
   Widget _buildSectionHeader({required String title, required IconData icon, required Color color}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -756,119 +1222,140 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
+}
 
-  Widget _buildLoanItem(Map<String, String> loan) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(colors: [Colors.blue.shade900, Colors.blue.shade600]),
-        ),
-        padding: const EdgeInsets.all(25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Icon(Icons.account_balance, color: Colors.white, size: 30),
-            Text(loan['PRODUCT_NAME'] ?? '',
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-            Text(loan['ACCOUNT_NUMBER'] ?? '',
-                style: const TextStyle(color: Colors.white70, fontFamily: 'monospace')),
-          ],
-        ),
+/// ---------------------------
+/// PAYMENTVIEW (Companion Widget)
+/// ---------------------------
+class PaymentView extends StatelessWidget {
+  final List<dynamic> data;
+  final ConnectionState connectionState;
+  final String lang;
+
+  const PaymentView({
+    required this.data,
+    required this.connectionState,
+    required this.lang,
+    super.key,
+  });
+
+  String t(BuildContext context, String key) {
+    return translations[lang]?[key] ?? key;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (connectionState == ConnectionState.waiting) {
+      return const SizedBox(height: 220, child: Center(child: CircularProgressIndicator()));
+    }
+
+    if (data.isEmpty) {
+      return SizedBox(
+        height: 100,
+        child: Center(child: Text(t(context, 'no_payments'), style: const TextStyle(color: Colors.black54))),
+      );
+    }
+
+    return Container(
+      color: Colors.white,
+      height: 230,
+      child: PageView.builder(
+        controller: PageController(viewportFraction: 0.9, initialPage: 0),
+        itemCount: data.length,
+        itemBuilder: (context, index) {
+          return _buildPaymentCarouselCard(context, data[index]);
+        },
       ),
     );
   }
-  Widget _buildDepositItem({
-    required String title,
-    required String interest,
-    required String period,
-    required List<Color> colors
-  }) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            colors: colors,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+
+  Widget _buildPaymentCarouselCard(BuildContext context, dynamic payment) {
+    return GestureDetector(
+      onTap: () {
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        elevation: 8,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              colors: [Colors.green.shade800, Colors.green.shade500],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-        ),
-        padding: const EdgeInsets.all(25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.savings_outlined, color: Colors.white, size: 28),
-                    const SizedBox(width: 10),
-                    Text(
-                      t(context, 'deposits').toUpperCase(),
+          padding: const EdgeInsets.all(25),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.receipt_long_outlined, color: Colors.white, size: 28),
+                      const SizedBox(width: 10),
+                      Text(
+                        t(context, 'payments').toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.1,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Text(
+                      "${payment['CURR'] ?? 'MKD'}",
                       style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 1.1,
+                        fontSize: 15,
                       ),
                     ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(15),
                   ),
-                  child: Text(
-                    interest,
+                ],
+              ),
+              const Spacer(),
+              Text(
+                payment['TITLE'] ?? payment['PRODUCT_NAME'] ?? '',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    payment['REFERENCE_NUMBER'] ?? payment['ACCOUNT_NUMBER'] ?? '',
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 16,
+                      color: Colors.white70,
+                      fontSize: 14,
+                      fontFamily: 'monospace',
+                      letterSpacing: 1.5,
                     ),
                   ),
-                ),
-              ],
-            ),
-
-            const Spacer(),
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
+                  const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+                ],
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "${t(context, 'period_label')}: $period",
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
-                ),
-                const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -882,48 +1369,51 @@ class LocationsView extends StatelessWidget {
   const LocationsView({super.key});
 
   static const String _mapsUrl =
-      'https://www.google.com/maps/search/?api=1&query=Ул.+Даме+Груев,+блок+1,+1000+Скопје';
+      'https://www.google.com/maps/place/FlexCredit/@42.0001971,21.4403052,2465m/data=!3m1!1e3!4m10!1m2!2m1!1sflexcredit!3m6!1s0x135415bb5ee2ce17:0x4309d6ea3a80b5e2!8m2!3d42.0001971!4d21.4593596!15sCgpmbGV4Y3JlZGl0kgELbG9hbl9hZ2VuY3ngAQA!16s%2Fg%2F11yq89lgbj?entry=ttu&g_ep=EgoyMDI2MDcwNi4wIKXMDSoASAFQAw%3D%3D';
 
   Future<void> _openMap(BuildContext context) async {
     final Uri uri = Uri.parse(_mapsUrl);
     try {
       if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not launch the map.')),
+          SnackBar(content: Text(t(context, 'could_not_launch'))),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error launching external app')),
+        SnackBar(content: Text(t(context, 'error_launching'))),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Opacity(
-            opacity: 0.2,
-            child: Image.asset('assets/images/map_bg.png', fit: BoxFit.cover),
-          ),
-          Center(
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.location_on_outlined),
-              label: Text(
-                translations[SPDUser.current.currentLanguage]!['open_in_maps']!,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.location_on, size: 64, color: colorScheme.primary),
+              const SizedBox(height: 30),
+              ElevatedButton.icon(
+                onPressed: () => _openMap(context),
+                icon: const Icon(Icons.map),
+                label: Text(t(context, 'open_in_maps')),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
               ),
-              onPressed: () => _openMap(context),
-            ),
-          )
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
 }
-
 /// ---------------------------
 /// LOAN
 /// ---------------------------
@@ -953,7 +1443,6 @@ class _LoginViewState extends State<LoginView> {
   String? _error;
   bool _loading = false;
 
-  // Track WHICH user is actually paused
   String? _lockedUsername;
   int _failedAttempts = 0;
   DateTime? _lockoutUntil;
@@ -967,7 +1456,6 @@ class _LoginViewState extends State<LoginView> {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
-    // 1. CHECK IF CURRENTLY PAUSED (Only if it's the SAME username that was locked)
     if (_lockoutUntil != null &&
         _lockedUsername == username &&
         DateTime.now().isBefore(_lockoutUntil!)) {
@@ -1004,7 +1492,7 @@ class _LoginViewState extends State<LoginView> {
       if (data['success'] == true) {
         _failedAttempts = 0;
         _lockoutUntil = null;
-        _lockedUsername = null; // Clear on success
+        _lockedUsername = null;
 
         final String uId = data['userId'].toString();
         final String loggedInCustId = data['crCustId'].toString();
@@ -1031,7 +1519,7 @@ class _LoginViewState extends State<LoginView> {
 
         if (_failedAttempts >= 3) {
           _lockoutUntil = DateTime.now().add(const Duration(minutes: 5));
-          _lockedUsername = username; // Assign the lockout to THIS specific username
+          _lockedUsername = username;
           _failedAttempts = 0;
           setState(() => _error = t(context, 'account_paused'));
         } else {
@@ -1049,18 +1537,17 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     final user = Provider.of<SPDUser>(context);
     final lang = user.currentLanguage;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        leadingWidth: 150,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leadingWidth: 200,
         leading: Padding(
           padding: const EdgeInsets.only(left: 12),
           child: Image.asset(
-            // Switch based on the current mode
-            isDark
-                ? 'assets/images/logo-spd-big-white.png'
-                : 'assets/images/logo-spd-big.png',
+            'assets/images/S.jpg',
             fit: BoxFit.contain,
           ),
         ),
@@ -1084,23 +1571,28 @@ class _LoginViewState extends State<LoginView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/images/logo-bs-small.jpg', height: 100, fit: BoxFit.contain),
-              const SizedBox(height: 100),
+              Image.asset('assets/images/S.jpg', height: 200, fit: BoxFit.contain),
+              const SizedBox(height: 200),
               TextField(
                 controller: _usernameController,
                 onChanged: (val) {
-                  // If we start typing and the error matches the "Paused" state,
-                  // we only hide the error text; the logic in _login handles
-                  // the actual blocking if they try to submit the locked name.
                   if (_error != null) {
                     setState(() {
                       _error = null;
                     });
                   }
                 },
+                style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   labelText: t(context, 'username'),
+                  labelStyle: const TextStyle(color: Colors.black54),
                   border: const OutlineInputBorder(),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black26),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue, width: 2),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -1110,9 +1602,17 @@ class _LoginViewState extends State<LoginView> {
                 onChanged: (_) {
                   if (_error != null) setState(() => _error = null);
                 },
+                style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   labelText: t(context, 'password'),
+                  labelStyle: const TextStyle(color: Colors.black54),
                   border: const OutlineInputBorder(),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black26),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue, width: 2),
+                  ),
                 ),
               ),
               if (_error != null) ...[
@@ -1166,7 +1666,6 @@ class _PinGateScreenState extends State<PinGateScreen> {
   String? error;
   final LocalAuthentication _auth = LocalAuthentication();
 
-  // Helper function for translations
   String t(BuildContext context, String key) {
     final user = Provider.of<SPDUser>(context, listen: false);
     return translations[user.currentLanguage]?[key] ?? key;
@@ -1183,7 +1682,6 @@ class _PinGateScreenState extends State<PinGateScreen> {
     bool isBioEnabled = prefs.getBool('bio_enabled_${widget.userId}') ?? false;
 
     if (isBioEnabled) {
-      // Direct call to system biometric prompt
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _authenticate();
       });
@@ -1197,12 +1695,9 @@ class _PinGateScreenState extends State<PinGateScreen> {
 
       if (!canCheck && !isSupported) return;
 
-      // Use direct parameters instead of the 'options' object
       final bool authenticated = await _auth.authenticate(
         localizedReason: t(context, 'verify_identity'),
-        // Remove 'options: const AuthenticationOptions('
         biometricOnly: true,
-        ///stickyAuth: true,
       );
 
       if (authenticated && mounted) {
@@ -1229,28 +1724,27 @@ class _PinGateScreenState extends State<PinGateScreen> {
   Widget build(BuildContext context) {
     final user = Provider.of<SPDUser>(context);
     final lang = user.currentLanguage;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        leadingWidth: 150,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leadingWidth: 200,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 12),
+          padding: const EdgeInsets.only(left: 5),
           child: Image.asset(
-            // Switch based on the current mode
-            isDark
-                ? 'assets/images/logo-spd-big-white.png'
-                : 'assets/images/logo-spd-big.png',
+            'assets/images/S.jpg',
             fit: BoxFit.contain,
           ),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
               onTap: () => SPDDialog.showLanguageDialog(context),
               child: Image.asset(
-                lang == 'mk' ? 'assets/images/langs/mk.png' : 'assets/images/langs/en.png',
+                lang == 'mk' ? 'assets/images/langs/en.png' : 'assets/images/langs/en.png',
                 width: 35,
                 height: 35,
               ),
@@ -1264,18 +1758,25 @@ class _PinGateScreenState extends State<PinGateScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/images/logo-bs-small.jpg', height: 100, fit: BoxFit.contain),
-              const SizedBox(height: 100),
+              Image.asset('assets/images/S.jpg', height: 200, fit: BoxFit.contain),
+              const SizedBox(height: 200),
               TextField(
                 autofocus: true,
                 obscureText: true,
                 keyboardType: TextInputType.number,
                 maxLength: 4,
                 onChanged: (v) => setState(() => enteredPin = v),
+                style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   labelText: t(context, 'pin'),
+                  labelStyle: const TextStyle(color: Colors.black54),
                   border: const OutlineInputBorder(),
-                  // Now calls the official system prompt directly
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black26),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue, width: 2),
+                  ),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.fingerprint, color: Colors.blue, size: 30),
                     onPressed: _authenticate,
@@ -1319,6 +1820,7 @@ class SPDMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: Colors.white,
       child: ListView(children: children),
     );
   }
@@ -1343,7 +1845,7 @@ class SPDMenuItem extends StatelessWidget {
           title: title,
           onTap: onTap,
         ),
-        const Divider(height: 1),
+        const Divider(height: 1, color: Colors.black12),
       ],
     );
   }
@@ -1376,6 +1878,8 @@ class SPDMenuGroupItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
+      backgroundColor: Colors.white,
+      collapsedBackgroundColor: Colors.white,
       leading: icon,
       title: title,
       children: items,
@@ -1388,21 +1892,21 @@ class SPDMenuGroupItem extends StatelessWidget {
 /// ---------------------------
 PreferredSizeWidget SPDAppBar(BuildContext context, {required Widget title}) {
   return AppBar(
+    backgroundColor: Colors.white,
+    elevation: 0,
+    iconTheme: const IconThemeData(color: Colors.black),
     title: Image.asset(
-      'assets/images/logo-spd-big.png',
-      width: 150,
-      height: 40,
+      'assets/images/S.jpg',
+      width: 100,
+      height: 100,
       fit: BoxFit.contain,
     ),
   );
 }
-
 /// ---------------------------
 /// MAINAPP
 /// ---------------------------
 Future<void> main() async {
-  // This line tells Flutter to use your custom 'MyHttpOverrides' class
-  // which ignores the "Unable to verify certificate" error.
   HttpOverrides.global = MyHttpOverrides();
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -1438,26 +1942,20 @@ class MyApp extends StatelessWidget {
         SfGlobalLocalizations.delegate,
       ],
 
-      // --- THEME SECTION START ---
-
-      // 1. Light Theme Configuration
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
-        colorSchemeSeed: Colors.blue, // Change this to your bank's primary color
+        colorSchemeSeed: Colors.blue,
       ),
 
-      // 2. Dark Theme Configuration
       darkTheme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        colorSchemeSeed: Colors.blue, // Keep the seed the same for brand consistency
+        colorSchemeSeed: Colors.blue,
       ),
 
-      // 3. Follow the System Setting (this makes it "automatic")
       themeMode: ThemeMode.system,
 
-      // --- THEME SECTION END ---
 
       home: const LoginView(),
     );
@@ -1470,7 +1968,7 @@ class MyApp extends StatelessWidget {
 class MainView extends StatefulWidget {
   final String userId;
   final String username;
-  static const int initialTabIndex = 2; // Default to 'Home'
+  static const int initialTabIndex = 2;
 
   const MainView({super.key, required this.userId, required this.username});
 
@@ -1514,114 +2012,107 @@ class _MainViewState extends State<MainView> with SingleTickerProviderStateMixin
   }
 
   List<Widget> menuItems() {
-    final user = Provider.of<SPDUser>(context, listen: false);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return [
       Container(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 13),
+        color: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Image.asset( isDark
-                ? 'assets/images/logo-spd-big-white.png'
-                : 'assets/images/logo-spd-big.png',
+            Image.asset(
+              'assets/images/S.jpg',
+              height: 236,
               fit: BoxFit.contain,
             ),
-            IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
           ],
         ),
       ),
       SPDMenuItem(
-        leading: const Icon(Icons.person),
-        title: Text(" ${widget.username}"),
+        leading: const Icon(Icons.person, color: Colors.black87),
+        title: Text(" ${widget.username}", style: const TextStyle(color: Colors.black)),
         onTap: () => Navigator.pop(context),
       ),
       SPDMenuGroup(items: [
         SPDMenuGroupItem(
           value: 'Menu_ControlPanel',
-          icon: const Icon(Icons.rocket_launch_outlined),
-          title: Text(t(context, 'control_panel')),
+          icon: const Icon(Icons.rocket_launch_outlined, color: Colors.black87),
+          title: Text(t(context, 'control_panel'), style: const TextStyle(color: Colors.black)),
           items: [
             SPDMenuItem(
-              leading: const Icon(Icons.home_outlined),
-              title: Text(t(context, 'home')),
+              leading: const Icon(Icons.home_outlined, color: Colors.black87),
+              title: Text(t(context, 'home'), style: const TextStyle(color: Colors.black)),
               onTap: () { Navigator.pop(context); changeView(tabIndex: 2); },
             ),
-            /// ===================== НОВО: Кредити =====================
             SPDMenuItem(
-              leading: const Icon(Icons.payments_outlined),
-              title: Text(t(context, 'loans')),
+              leading: const Icon(Icons.payments_outlined, color: Colors.black87),
+              title: Text(t(context, 'loans'), style: const TextStyle(color: Colors.black)),
               onTap: () {
-                Navigator.pop(context); // Го затвора drawer-от
+                Navigator.pop(context);
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => LoansView(userId: widget.userId) // Праќаме userId
+                        builder: (_) => LoansView(userId: widget.userId)
                     )
                 );
               },
             ),
-            /// ===================== НОВО: Позајмици =====================
-            // SPDMenuItem(
-            //   leading: const Icon(Icons.savings_outlined),
-            //   title: Text(t(context, 'deposits')),
-            //   onTap: () {
-            //     Navigator.pop(context);
-            //     Navigator.push(
-            //         context,
-            //         MaterialPageRoute(builder: (_) => const DepositsView())
-            //     );
-            //   },
-            // ),
             SPDMenuItem(
-              leading: const Icon(Icons.currency_exchange_outlined),
-              // This now calls the translation helper every time the UI paints
-              title: Text(t(context, 'exchange_rates')),
+              leading: const Icon(Icons.payment, color: Colors.black87),
+              title: Text(t(context, 'payments'), style: const TextStyle(color: Colors.black)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => PaymentsView(userId: widget.userId)
+                    )
+                );
+              },
+            ),
+            SPDMenuItem(
+              leading: const Icon(Icons.currency_exchange_outlined, color: Colors.black87),
+              title: Text(t(context, 'exchange_rates'), style: const TextStyle(color: Colors.black)),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const ExchangeRatesView()));
               },
             ),
-
-            /// ===================== ADDED CALENDAR ITEM =====================
             SPDMenuItem(
-              leading: const Icon(Icons.calendar_today_outlined),
-              title: Text(t(context, 'calendar')), // Make sure 'calendar' is in your translations
+              leading: const Icon(Icons.calendar_today_outlined, color: Colors.black87),
+              title: Text(t(context, 'calendar'), style: const TextStyle(color: Colors.black)),
               onTap: () {
-                Navigator.pop(context); // Close the drawer
+                Navigator.pop(context);
                 Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const CalendarView())
                 );
               },
             ),
-            /// ==============================================================
           ],
         ),
       ]),
-      const Divider(),
+      const Divider(color: Colors.black12),
       SPDMenuItem(
-        leading: const Icon(Icons.language_outlined),
-        title: Text(t(context, 'language')),
+        leading: const Icon(Icons.language_outlined, color: Colors.black87),
+        title: Text(t(context, 'language'), style: const TextStyle(color: Colors.black)),
         onTap: () { Navigator.pop(context); SPDDialog.showLanguageDialog(context); },
       ),
       SPDMenuItem(
-        leading: const Icon(Icons.settings_outlined),
-        title: Text(t(context, 'settings')),
+        leading: const Icon(Icons.settings_outlined, color: Colors.black87),
+        title: Text(t(context, 'settings'), style: const TextStyle(color: Colors.black)),
         onTap: () { Navigator.pop(context);
-        // Inside your MainView or wherever you open Settings
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => SettingsView(userId: widget.userId), // widget.userId comes from MainView
+            builder: (_) => SettingsView(userId: widget.userId),
           ),
         ); },
       ),
       SPDMenuItem(
         leading: const Icon(Icons.logout, color: Colors.red),
-        title: Text(t(context, 'logout')),
+        title: Text(t(context, 'logout'), style: const TextStyle(color: Colors.red)),
         onTap: () {
-          Navigator.pop(context); // Close the drawer
+          Navigator.pop(context);
           SPDDialog.showLogoutDialog(context, () async {
             final user = Provider.of<SPDUser>(context, listen: false);
             await user.logout();
@@ -1641,19 +2132,23 @@ class _MainViewState extends State<MainView> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<SPDUser>(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       key: scaffoldKey,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        leadingWidth: 150,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+        leadingWidth: 80,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 12),
-          child: Image.asset(
-            // Switch based on the current mode
-            isDark
-                ? 'assets/images/logo-spd-big-white.png'
-                : 'assets/images/logo-spd-big.png',
-            fit: BoxFit.contain,
+          padding: const EdgeInsets.only(left: 9),
+          child: Transform.scale(
+            scale: 2.1,
+            alignment: Alignment.centerLeft,
+            child: Image.asset(
+              'assets/images/S.jpg',
+              fit: BoxFit.contain,
+            ),
           ),
         ),
         actions: [
@@ -1663,29 +2158,35 @@ class _MainViewState extends State<MainView> with SingleTickerProviderStateMixin
               onTap: () => SPDDialog.showLanguageDialog(context),
               child: Image.asset(
                 user.currentLanguage == 'mk' ? 'assets/images/langs/mk.png' : 'assets/images/langs/en.png',
-                width: 35, height: 35,
+                width: 35,
+                height: 35,
               ),
             ),
           ),
         ],
       ),
       endDrawer: SPDMenu(children: menuItems()),
-      body: TabBarView(
-        controller: tabController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          const NewsView(),
-          const ContactView(),
-          HomeView(userId: widget.userId, username: widget.username),
-          const LocationsView(),
-          const SizedBox.shrink(),
-        ],
+      body: Container(
+        color: Colors.white,
+        child: TabBarView(
+          controller: tabController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            const NewsView(),
+            const ContactView(),
+            HomeView(userId: widget.userId, username: widget.username),
+            const LocationsView(),
+            const SizedBox.shrink(),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: tabController.index,
         onTap: (index) => changeView(tabIndex: index),
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.blue, // Change to your primary color
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.black54,
         items: [
           BottomNavigationBarItem(icon: const Icon(Icons.notifications_outlined), label: t(context, 'news')),
           BottomNavigationBarItem(icon: const Icon(Icons.phone_outlined), label: t(context, 'contact')),
@@ -1722,11 +2223,12 @@ class LoanView extends StatelessWidget {
     if (data.isEmpty) {
       return SizedBox(
         height: 100,
-        child: Center(child: Text(t(context, 'no_loans'))),
+        child: Center(child: Text(t(context, 'no_loans'), style: const TextStyle(color: Colors.black54))),
       );
     }
 
-    return SizedBox(
+    return Container(
+      color: Colors.white,
       height: 230,
       child: PageView.builder(
         controller: PageController(viewportFraction: 0.9, initialPage: 0),
@@ -1739,9 +2241,6 @@ class LoanView extends StatelessWidget {
   }
 
   Widget _buildLoanCarouselCard(BuildContext context, dynamic loan) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -1759,9 +2258,7 @@ class LoanView extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             gradient: LinearGradient(
-              colors: isDark
-                  ? [Colors.blue.shade900, Colors.blueGrey.shade800]
-                  : [Colors.blue.shade800, Colors.blue.shade500],
+              colors: [Colors.blue.shade800, Colors.blue.shade500],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -1849,16 +2346,16 @@ class LoanViewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Card(
+      color: Colors.white,
       child: ListTile(
         title: Text(
           loan.title,
-          style: TextStyle(color: colorScheme.onSurface),
+          style: const TextStyle(color: Colors.black),
         ),
         subtitle: Text(
           loan.amount.toString(),
-          style: TextStyle(color: colorScheme.onSurfaceVariant),
+          style: const TextStyle(color: Colors.black54),
         ),
       ),
     );
@@ -1904,17 +2401,16 @@ class _ExchangeRatesViewState extends State<ExchangeRatesView> {
     final user = Provider.of<SPDUser>(context);
     final lang = user.currentLanguage ?? 'en';
 
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text(translations[lang]?['exchange_rates'] ?? 'Exchange Rates'),
         centerTitle: false,
         elevation: 1,
-        // Text color adjusts automatically to the background
-        titleTextStyle: TextStyle(
-            color: colorScheme.onSurface,
+        iconTheme: const IconThemeData(color: Colors.black),
+        titleTextStyle: const TextStyle(
+            color: Colors.black,
             fontSize: 20,
             fontWeight: FontWeight.bold
         ),
@@ -1931,14 +2427,14 @@ class _ExchangeRatesViewState extends State<ExchangeRatesView> {
               return Center(
                   child: Text(
                     '${translations[lang]?['server_error'] ?? 'Error'}: ${snapshot.error}',
-                    style: TextStyle(color: colorScheme.onSurface),
+                    style: const TextStyle(color: Colors.black),
                   )
               );
             }
             final rates = snapshot.data ?? [];
             return ListView.separated(
               itemCount: rates.length,
-              separatorBuilder: (context, index) => const Divider(height: 1),
+              separatorBuilder: (context, index) => const Divider(height: 1, color: Colors.black12),
               itemBuilder: (context, index) {
                 final item = rates[index];
                 final oznaka = item['oznaka'] ?? '';
@@ -1948,7 +2444,6 @@ class _ExchangeRatesViewState extends State<ExchangeRatesView> {
 
                 return ListTile(
                   leading: CircleAvatar(
-                    // Kept as white for both modes
                     backgroundColor: Colors.white,
                     child: ClipOval(
                       child: Image.asset(
@@ -1960,7 +2455,7 @@ class _ExchangeRatesViewState extends State<ExchangeRatesView> {
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
-                              color: Colors.black, // Dark text on white circle
+                              color: Colors.black,
                             ),
                           );
                         },
@@ -1969,41 +2464,38 @@ class _ExchangeRatesViewState extends State<ExchangeRatesView> {
                   ),
                   title: Text(
                     '$naziv ($oznaka)',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: colorScheme.onSurface,
+                      color: Colors.black,
                     ),
                   ),
                   subtitle: Text(
                     drzava,
-                    style: TextStyle(color: colorScheme.onSurfaceVariant),
+                    style: const TextStyle(color: Colors.black54),
                   ),
                   trailing: Text(
                     rate,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: colorScheme.primary,
+                        color: Colors.blue,
                         fontSize: 16
                     ),
                   ),
                 );
               },
             );
-
           },
         ),
       ),
     );
   }
 }
-
 /// ---------------------------
 /// SETTINGS
 /// ---------------------------
 class SettingsView extends StatefulWidget {
 
-  final String userId; // Add this line
-  // Add userId to the constructor
+  final String userId;
   const SettingsView({super.key, required this.userId});
 
 
@@ -2024,7 +2516,6 @@ class _SettingsViewState extends State<SettingsView> {
   _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      // Make sure to use the same key format: bio_enabled_{userId}
       _isBioEnabled = prefs.getBool('bio_enabled_${widget.userId}') ?? false;
     });
   }
@@ -2040,7 +2531,7 @@ class _SettingsViewState extends State<SettingsView> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<SPDUser>(context);
-    final lang = user.currentLanguage ?? 'en'; // fallback to English
+    final lang = user.currentLanguage ?? 'en';
 
     return Scaffold(
       appBar: AppBar(
@@ -2050,7 +2541,6 @@ class _SettingsViewState extends State<SettingsView> {
       ),
       body: ListView(
         children: [
-          // Language section
           SPDMenuItem(
             leading: const Icon(Icons.language_outlined),
             title: Text(translations[lang]?['language'] ?? 'Language'),
@@ -2060,28 +2550,26 @@ class _SettingsViewState extends State<SettingsView> {
 
               showDialog(
                 context: context,
-                builder: (ctx) => AlertDialog( // Use 'ctx' for the dialog context
+                builder: (ctx) => AlertDialog(
                   title: Text(translations[lang]?['select_language'] ?? 'Select Language'),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // ENGLISH OPTION
                       ListTile(
                         leading: Image.asset('assets/images/langs/en.png', width: 32, height: 32),
                         title: Text(translations[lang]?['english'] ?? 'English'),
                         onTap: () {
                           user.setLanguage('en');
-                          Navigator.pop(ctx); // Use ctx to close the dialog
+                          Navigator.pop(ctx);
                         },
                       ),
                       const Divider(),
-                      // MACEDONIAN OPTION
                       ListTile(
                         leading: Image.asset('assets/images/langs/mk.png', width: 32, height: 32),
                         title: Text(translations[lang]?['macedonian'] ?? 'Macedonian'),
                         onTap: () {
                           user.setLanguage('mk');
-                          Navigator.pop(ctx); // Use ctx to close the dialog
+                          Navigator.pop(ctx);
                         },
                       ),
                     ],
@@ -2111,8 +2599,6 @@ class _SettingsViewState extends State<SettingsView> {
               }
             },
           ),
-
-          // Use biometrics
           SwitchListTile(
             title: Text(t(context, 'use_biometrics')),
             secondary: const Icon(Icons.fingerprint),
@@ -2121,7 +2607,6 @@ class _SettingsViewState extends State<SettingsView> {
           ),
           const Divider(),
 
-          // Application info
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: Text(translations[lang]?['application_info'] ?? 'Application info'),
@@ -2164,7 +2649,6 @@ class ApplicationInfoView extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
 
-            // Application Name
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -2178,7 +2662,6 @@ class ApplicationInfoView extends StatelessWidget {
             const SizedBox(height: 10),
             const Divider(),
 
-            // Version
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -2192,7 +2675,6 @@ class ApplicationInfoView extends StatelessWidget {
             const SizedBox(height: 10),
             const Divider(),
 
-            // Developer
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -2225,7 +2707,6 @@ class _ChangePinViewState extends State<ChangePinView> {
   final TextEditingController _confirmPinController = TextEditingController();
   String? _error;
 
-  // Helper to fetch translations based on current language
   String t(BuildContext context, String key) {
     final user = Provider.of<SPDUser>(context, listen: false);
     return translations[user.currentLanguage]?[key] ?? key;
@@ -2236,7 +2717,6 @@ class _ChangePinViewState extends State<ChangePinView> {
     final confirmPin = _confirmPinController.text.trim();
     final user = Provider.of<SPDUser>(context, listen: false);
 
-    // Validation
     if (user.userId == null) {
       setState(() => _error = "Session error: User ID not found");
       return;
@@ -2252,23 +2732,21 @@ class _ChangePinViewState extends State<ChangePinView> {
       return;
     }
 
-    // Save to SharedPreferences using the correct user key
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_${user.userId}_pin', pin);
 
     setState(() => _error = null);
 
-    // Show the left-aligned success dialog
     if (!mounted) return;
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         child: Padding(
-          padding: const EdgeInsets.all(24.0), // Consistent margin
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start, // All text starts on the left
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                   t(context, 'success'),
@@ -2278,17 +2756,17 @@ class _ChangePinViewState extends State<ChangePinView> {
               Text(t(context, 'pin_changed_success')),
               const SizedBox(height: 24),
               Row(
-                mainAxisAlignment: MainAxisAlignment.start, // Button on the left
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   TextButton(
                     style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero, // Line up text with title
+                      padding: EdgeInsets.zero,
                       minimumSize: const Size(0, 0),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     onPressed: () {
-                      Navigator.pop(ctx); // Close Dialog
-                      Navigator.pop(context, true); // Close Screen
+                      Navigator.pop(ctx);
+                      Navigator.pop(context, true);
                     },
                     child: const Text(
                         "OK",
@@ -2315,10 +2793,9 @@ class _ChangePinViewState extends State<ChangePinView> {
         leading: Padding(
           padding: const EdgeInsets.only(left: 12),
           child: Image.asset(
-            // Switch based on the current mode
             isDark
-                ? 'assets/images/logo-spd-big-white.png'
-                : 'assets/images/logo-spd-big.png',
+                ? 'assets/images/S.jpg'
+                : 'assets/images/S.jpg',
             fit: BoxFit.contain,
           ),
         ),
@@ -2344,7 +2821,7 @@ class _ChangePinViewState extends State<ChangePinView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/images/logo-bs-small.jpg', height: 100, fit: BoxFit.contain),
+              Image.asset('assets/images/S.jpg', height: 100, fit: BoxFit.contain),
               const SizedBox(height: 100),
               TextField(
                 controller: _pinController,
@@ -2397,115 +2874,55 @@ class _ChangePinViewState extends State<ChangePinView> {
 /// SPDUser
 /// ---------------------------
 class SPDUser extends ChangeNotifier {
-  bool isLoggedIn = false;
+  static late SPDUser current;
+
   String? _userId;
-  String currentLanguage = 'en'; // 'en' or 'mk'
-  String? sessionCookie; // store PHP session cookie
-  String? username; // optional, for reference
-  static final SPDUser current = SPDUser._internal();
-  SPDUser._internal();
+  String _currentLanguage = 'mk';
+
+
   String? get userId => _userId;
+  String get currentLanguage => _currentLanguage;
 
-  // Initialize (if needed)
   static Future<void> init() async {
-    await Future.delayed(const Duration(milliseconds: 100));
-  }
-
-  // Inside your SPDUser class
-  Future<void> updatePin(String newPin) async {
+    current = SPDUser();
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_pin', newPin); // Save locally
-    // If you have a server, you would also do an API call here
-    notifyListeners();
+    current._currentLanguage = prefs.getString('selected_language') ?? 'mk';
   }
 
-  Future<void> logout() async {
-    isLoggedIn = false;
-    sessionCookie = null;
-    _userId = null;
-
-    // Clear SharedPreferences so the session is truly dead
-    final prefs = await SharedPreferences.getInstance();
-    // If you want to keep settings like language but clear login:
-    await prefs.remove('session_key'); // or whatever key you use
-    // Or to clear everything:
-    // await prefs.clear();
-
-    notifyListeners();
-  }
-
-  void setLanguage(String lang) {
-    currentLanguage = lang;
-    notifyListeners();
-  }
-
-  void setUserData(String id) {
+  void setUserData(String? id) {
     _userId = id;
     notifyListeners();
   }
 
-  // Login method
-  static Future<bool> login(String username, String password) async {
+  void setLanguage(String langCode) async {
+    if (_currentLanguage != langCode) {
+      _currentLanguage = langCode;
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('selected_language', langCode);
+
+      notifyListeners();
+    }
+  }
+
+  Future<void> logout() async {
+    _userId = null;
+    notifyListeners();
+  }
+
+  static Future<http.Response> post(String url, {required Map<String, dynamic> body}) async {
     try {
       final response = await http.post(
-        Uri.parse("https://epay.fkcbs.com.mk/loginapiprod.php"), // your real login PHP URL
-        body: {
-          'username': username,
-          'password': password,
-        },
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
       );
-
-      if (response.statusCode == 200) {
-        // extract session cookie from headers
-        final cookies = response.headers['set-cookie'];
-        if (cookies != null) {
-          SPDUser.current.sessionCookie = cookies.split(';')[0];
-        }
-
-        SPDUser.current.isLoggedIn = true;
-        SPDUser.current.username = username;
-        SPDUser.current.notifyListeners();
-        return true;
-      } else {
-        return false;
-      }
+      return response;
     } catch (e) {
-      debugPrint('Login error: $e');
-      return false;
+      return http.Response(jsonEncode({'error': e.toString()}), 500);
     }
-  }
-
-  // GET request with session cookie
-  static Future<http.Response> get(String endpoint) async {
-    final headers = <String, String>{};
-    if (current.sessionCookie != null) {
-      headers['Cookie'] = current.sessionCookie!;
-    }
-
-    return await http.get(Uri.parse(endpoint), headers: headers);
-  }
-
-  // POST request with session cookie
-  static Future<http.Response> post(String endpoint, {Map<String, dynamic>? body}) async {
-    final headers = <String, String>{};
-    if (current.sessionCookie != null) {
-      headers['Cookie'] = current.sessionCookie!;
-    }
-
-    return await http.post(Uri.parse(endpoint), body: body, headers: headers);
-  }
-
-  // Handle responses
-  static bool handleResponse(BuildContext context, http.Response? response, {Function? callback}) {
-    if (response == null || response.statusCode != 200) {
-      return true; // treat as error
-    }
-
-    if (callback != null) callback();
-    return false; // no logout needed
   }
 }
-
 /// ---------------------------
 /// SPDRoute
 /// ---------------------------
@@ -2538,7 +2955,6 @@ class SPDDialog {
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
-        // The background color will now automatically adapt to theme.colorScheme.surface
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -2550,7 +2966,6 @@ class SPDDialog {
                 _t(context, 'logout'),
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w500,
-                  // Color automatically switches between dark/light text
                   color: colorScheme.onSurface,
                 ),
               ),
@@ -2558,7 +2973,6 @@ class SPDDialog {
               Text(
                 _t(context, 'confirm_logout_msg') ?? "Дали сакате да се одјавите?",
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  // Adaptive muted color (e.g., grey in light, light grey in dark)
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -2571,7 +2985,6 @@ class SPDDialog {
                       padding: EdgeInsets.zero,
                       minimumSize: const Size(0, 0),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      // Highlight color (usually blue or green)
                       foregroundColor: colorScheme.primary,
                     ),
                     onPressed: () {
@@ -2628,7 +3041,6 @@ class SPDDialog {
             ListTile(
               leading: Image.asset('assets/images/langs/en.png', width: 32, height: 32),
               title: Text(_t(context, 'english')),
-              // Text color in ListTile automatically follows theme
               onTap: () {
                 user.setLanguage('en');
                 Navigator.pop(ctx);
@@ -2684,7 +3096,6 @@ class SPDDialog {
         barrierDismissible: false,
         builder: (_) => Center(
             child: CircularProgressIndicator(
-              // Uses the primary theme color (blue/green) in both modes
               valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
             )
         )
@@ -3195,9 +3606,7 @@ class LoanDetailsView extends StatelessWidget {
     String lbl(String key) => translations[lang]?[key] ?? key;
 
     return Scaffold(
-      // Removed hardcoded white - now uses theme background
       appBar: AppBar(
-        // Colors will now adapt automatically
         title: Text(lbl('loan'), style: const TextStyle(fontWeight: FontWeight.bold)),
         elevation: 1,
       ),
@@ -3236,7 +3645,6 @@ class LoanDetailsView extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        // Light blue for light mode, deep subtle blue for dark mode
         color: isDark ? Colors.blue.withOpacity(0.15) : Colors.blue.shade50,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: isDark ? Colors.blueAccent.withOpacity(0.3) : Colors.blue.shade100),
@@ -3261,7 +3669,6 @@ class LoanDetailsView extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Grey text that adapts
           Text(label, style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 14)),
           Flexible(
               child: Text(
@@ -3270,7 +3677,7 @@ class LoanDetailsView extends StatelessWidget {
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
-                      color: colorScheme.onSurface // Black in light / White in dark
+                      color: colorScheme.onSurface
                   )
               )
           ),
@@ -3474,13 +3881,10 @@ Future<List<Map<String, String>>> fetchLoans(String userId) async {
   }
 }
 
-// Helper to format 200000 into 200,000.00
 String _formatAmount(dynamic val) {
   if (val == null) return "0.00";
   double amount = double.tryParse(val.toString()) ?? 0.0;
-
-  // This creates the comma separator and 2 decimal places
-  // Example: 200000 -> 200,000.00
+=
   return amount.toStringAsFixed(2).replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 }
